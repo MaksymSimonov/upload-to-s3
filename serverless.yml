@@ -1,9 +1,9 @@
-service: upload-imgs-to-S3
+service: uploadimgtos3
 
 frameworkVersion: '2'
 
-custom:
-  bucket: upload-img-bucket
+# custom:
+#   bucket: upload-img-bucket
   
 # provider:
 #   name: aws
