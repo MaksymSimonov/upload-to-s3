@@ -1,0 +1,15 @@
+{
+  "name": "upload-to-s3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate-form.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.0.0",
+    "dotenv": "^8.2.0"
+  }
+}
