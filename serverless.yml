@@ -2,8 +2,8 @@ service: uploadimgtos3
 
 frameworkVersion: '2'
 
-# custom:
-#   bucket: upload-img-bucket
+custom:
+  bucket: upload-img-bucket
   
 # provider:
 #   name: aws
@@ -40,16 +40,6 @@ package:
   exclude:
     - '*'
     - '**/*'
-    
-# functions:
-#   postprocess:
-#     handler: handler.postprocess
-#     events:
-#       - s3:
-#           bucket: ${self:custom.bucket}
-#           event: s3:ObjectCreated:*
-#           rules:
-#             - suffix: .png
 
 functions:
   signup:
@@ -94,6 +84,21 @@ functions:
       - http:
           path: post
           method: post
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+  getPresignedPostData:
+    handler: 'getPresignedPostData.handler'
+    package:
+      include:
+        - getPresignedPostData.js
+        - node_modules/**
+    events:
+      - http:
+          path: getPresignedPostData
+          method: get
+          cors: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
