@@ -1,12 +1,33 @@
+const S3 = require("aws-sdk/clients/s3")
 const { Client } = require('pg')
+
+const deleteImgFromS3 = (key) => {
+  const s3 = new S3()
+  const params = {  
+    Bucket: process.env.BUCKET_NAME,
+    Key: key 
+  }
+  
+  return new Promise((resolve, reject) => {
+    s3.deleteObject(params, (err, data) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      resolve(data)
+    })
+  })
+}
 
 module.exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body)
-    const { userId, key, src } = body
-    if (!userId || !key || !src) {
-      return response(400, 'You must specify userId, key and src')
+    const { userId, key } = body
+    if (!userId || !key) {
+      return response(400, 'You must specify userId, key')
     }
+
+    await deleteImgFromS3(key)
 
     const client = new Client({
       host: process.env.DB_HOSTNAME,
@@ -31,12 +52,12 @@ module.exports.handler = async (event) => {
     }
 
     const result = await client.query(`
-      INSERT INTO public.images (userId, key, src) VALUES ('${userId}', '${key}', '${src}') RETURNING *;
+      DELETE FROM public.images WHERE userId = '${userId}' AND key = '${key}' RETURNING *;
     `)
 
     await client.end()
 
-    return response(200, { saved: result.rows })
+    return response(200, { deleted: result.rows })
   } catch (error) {
     return response(500, error)
   }

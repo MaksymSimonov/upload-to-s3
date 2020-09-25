@@ -16,9 +16,15 @@ custom:
 provider:
   name: aws
   runtime: nodejs12.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: "*"
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
   environment:
+    BUCKET_NAME: ${self:custom.bucket}
     DB_HOSTNAME:
       Fn::GetAtt:
         - DBInstance
@@ -47,6 +53,7 @@ functions:
     package:
       include:
         - signup.js
+        - node_modules/**
     events:
       - http:
           path: signup
@@ -68,12 +75,8 @@ functions:
         - node_modules/**
     events:
       - http:
-          path: getImgs
+          path: image/getAll
           method: get
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: ApiGatewayAuthorizer
   post:
     handler: 'post.handler'
     package:
@@ -82,7 +85,7 @@ functions:
         - node_modules/**
     events:
       - http:
-          path: post
+          path: image/post
           method: post
           authorizer:
             type: COGNITO_USER_POOLS
@@ -103,6 +106,40 @@ functions:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
+  deleteImg:
+    handler: 'deleteImg.handler'
+    package:
+      include:
+        - deleteImg.js
+        - node_modules/**
+    events:
+      - http:
+          path: image/delete
+          method: delete
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+  getUsers:
+    handler: 'getUsers.handler'
+    package:
+      include:
+        - getUsers.js
+        - node_modules/**
+    events:
+      - http:
+          path: users/getAll
+          method: get
+  deleteUser:
+    handler: 'deleteUser.handler'
+    package:
+      include:
+        - deleteUser.js
+        - node_modules/**
+    events:
+      - http:
+          path: users/delete
+          method: delete          
 
 resources:
   - ${file(resources/cognito.yml)}

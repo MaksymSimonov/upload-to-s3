@@ -13,28 +13,26 @@ module.exports.handler = async () => {
     await client.connect()
 
     const tableExists = await client
-      .query('SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = \'public\' AND tablename  = \'images\');')
+      .query('SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = \'public\' AND tablename  = \'users\');')
       .then((result) => result.rows[0].exists)
 
     if (tableExists) {
-      const result = await client.query('SELECT * FROM public.images')
+      const result = await client.query('SELECT * FROM public.users')
       await client.end()
-      return response(200, { images: result.rows })
+      return response(200, { users: result.rows })
     }
 
-    await client.query(` 
-      CREATE TABLE public.images (
-        id SERIAL, userId TEXT NOT NULL, key TEXT NOT NULL, src TEXT NOT NULL, FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
-      );
+    await client.query(`
+      CREATE TABLE public.users (id TEXT PRIMARY KEY, password TEXT NOT NULL);
     `)
 
     await client.end()
 
-    return response(200, { images: [] })
+    return response(200, { users: [] })
   } catch (error) {
     return response(500, error)
   }
-};
+}
 
 const response = (responseCode, message) => ({
   statusCode: responseCode,

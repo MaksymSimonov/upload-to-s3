@@ -14,7 +14,7 @@ const createPresignedPost = ({ key, contentType }) => {
     }
   }
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     s3.createPresignedPost(params, (err, data) => {
       if (err) {
         reject(err)
