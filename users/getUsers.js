@@ -17,7 +17,7 @@ module.exports.handler = async () => {
       .then((result) => result.rows[0].exists)
 
     if (tableExists) {
-      const result = await client.query('SELECT * FROM public.users')
+      const result = await client.query('SELECT public.users.id FROM public.users;')
       await client.end()
       return response(200, { users: result.rows })
     }

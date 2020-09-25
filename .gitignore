@@ -3,7 +3,8 @@ node_modules
 jspm_packages
 
 .env
-client/index.html
+client
+generate-form.js
 
 # Serverless directories
 .serverless
