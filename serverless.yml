@@ -5,14 +5,6 @@ frameworkVersion: '2'
 custom:
   bucket: upload-img-bucket
   
-# provider:
-#   name: aws
-#   runtime: nodejs12.x
-#   iamRoleStatements:
-#     - Effect: Allow
-#       Action:
-#         - s3:*
-#       Resource: "*"
 provider:
   name: aws
   runtime: nodejs12.x
@@ -20,7 +12,7 @@ provider:
     - Effect: Allow
       Action:
         - s3:*
-      Resource: "*"
+      Resource: 'arn:aws:s3:::${self:custom.bucket}/*'
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
   environment:
@@ -76,8 +68,7 @@ functions:
     events:
       - http:
           path: getPresignedPostData
-          method: get
-          cors: true
+          method: post
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:

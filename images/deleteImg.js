@@ -59,7 +59,7 @@ module.exports.handler = async (event) => {
 
     return response(200, { deleted: result.rows })
   } catch (error) {
-    return response(500, error)
+    return response(500, error.message)
   }
 }
 

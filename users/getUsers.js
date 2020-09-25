@@ -30,7 +30,7 @@ module.exports.handler = async () => {
 
     return response(200, { users: [] })
   } catch (error) {
-    return response(500, error)
+    return response(500, error.message)
   }
 }
 

@@ -32,7 +32,7 @@ module.exports.handler = async () => {
 
     return response(200, { images: [] })
   } catch (error) {
-    return response(500, error)
+    return response(500, error.message)
   }
 };
 
