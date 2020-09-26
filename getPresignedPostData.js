@@ -28,12 +28,11 @@ const createPresignedPost = ({ key, contentType }) => {
 
 module.exports.handler = async (event) => {
   try {
-    const body = JSON.parse(event.body)
-    const { name } = body
+    const fileName = event['pathParameters']['fileName']
 
     const presignedPostData = await createPresignedPost({
-      key: `${uniqid()}_${name}`,
-      contentType: mime.getType(name)
+      key: `${uniqid()}_${fileName}`,
+      contentType: mime.getType(fileName)
     })
 
     return response(200, { data: presignedPostData })

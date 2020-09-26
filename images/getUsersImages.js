@@ -1,7 +1,9 @@
 const { Client } = require('pg')
 
-module.exports.handler = async () => {
+module.exports.handler = async (event) => {
   try {
+    const userId = event['pathParameters']['userId']
+
     const client = new Client({
       host: process.env.DB_HOSTNAME,
       database: process.env.DB_NAME,
@@ -17,7 +19,9 @@ module.exports.handler = async () => {
       .then((result) => result.rows[0].exists)
 
     if (tableExists) {
-      const result = await client.query('SELECT * FROM public.images')
+      const result = await client.query(`
+        SELECT * FROM public.images WHERE userId = '${userId}';
+      `)
       await client.end()
       return response(200, { images: result.rows })
     }

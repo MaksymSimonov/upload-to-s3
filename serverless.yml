@@ -67,18 +67,22 @@ functions:
         - node_modules/**
     events:
       - http:
-          path: getPresignedPostData
-          method: post
+          path: 'getPresignedPostData/{fileName}'
+          method: get
+          request:
+            parameters:
+              paths:
+                fileName: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
-  getImgs:
-    handler: 'images/getImgs.handler'
+  getAllImages:
+    handler: 'images/getAll.handler'
     package:
       include:
-        - 'images/getImgs.js'
-        - node_modules/**
+        - 'images/getAll.js'
+        - 'node_modules/**'
     events:
       - http:
           path: 'images/getAll'
@@ -87,40 +91,66 @@ functions:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
-  postImg:
-    handler: 'images/postImg.handler'
+  postImage:
+    handler: 'images/post.handler'
     package:
       include:
-        - 'images/postImg.js'
-        - node_modules/**
+        - 'images/post.js'
+        - 'node_modules/**'
     events:
       - http:
-          path: 'images/post'
+          path: 'images/{userId}/post'
           method: post
+          request:
+            parameters:
+              paths:
+                userId: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
-  deleteImg:
-    handler: 'images/deleteImg.handler'
+  deleteImage:
+    handler: 'images/delete.handler'
     package:
       include:
-        - 'images/deleteImg.js'
-        - node_modules/**
+        - 'images/delete.js'
+        - 'node_modules/**'
     events:
       - http:
-          path: 'images/delete'
+          path: 'images/{userId}/delete'
           method: delete
+          request:
+            parameters:
+              paths:
+                userId: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
-  getUsers:
+  getUsersImages:
+    handler: 'images/getUsersImages.handler'
+    package:
+      include:
+        - 'images/getUsersImages.js'
+        - 'node_modules/**'
+    events:
+      - http:
+          path: 'images/{userId}/getAll'
+          method: get
+          request:
+            parameters:
+              paths:
+                userId: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+  getAllUsers:
     handler: 'users/getUsers.handler'
     package:
       include:
         - 'users/getUsers.js'
-        - node_modules/**
+        - 'node_modules/**'
     events:
       - http:
           path: 'users/getAll'
@@ -128,21 +158,7 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
-              Ref: ApiGatewayAuthorizer
-  deleteUser:
-    handler: 'users/deleteUser.handler'
-    package:
-      include:
-        - 'users/deleteUser.js'
-        - node_modules/**
-    events:
-      - http:
-          path: 'users/delete'
-          method: delete    
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: ApiGatewayAuthorizer      
+              Ref: ApiGatewayAuthorizer   
 
 resources:
   - ${file(resources/cognito.yml)}

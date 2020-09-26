@@ -5,6 +5,7 @@ const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider()
 module.exports.handler = async (event) => {
   const body = JSON.parse(event.body)
   const { username, password } = body
+  
   if (!username || !password) {
     return response(400, 'You must specify the username and password')
   }

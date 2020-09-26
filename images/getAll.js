@@ -1,13 +1,7 @@
 const { Client } = require('pg')
 
-module.exports.handler = async (event) => {
+module.exports.handler = async () => {
   try {
-    const body = JSON.parse(event.body)
-    const { userId } = body
-    if (!userId) {
-      return response(400, 'You must specify userId')
-    }
-
     const client = new Client({
       host: process.env.DB_HOSTNAME,
       database: process.env.DB_NAME,
@@ -19,26 +13,28 @@ module.exports.handler = async (event) => {
     await client.connect()
 
     const tableExists = await client
-      .query('SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = \'public\' AND tablename  = \'users\');')
+      .query('SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = \'public\' AND tablename  = \'images\');')
       .then((result) => result.rows[0].exists)
 
-    if (!tableExists) {
-      await client.query(`
-        CREATE TABLE public.users (id TEXT PRIMARY KEY, password TEXT NOT NULL);
-      `)
+    if (tableExists) {
+      const result = await client.query('SELECT * FROM public.images;')
+      await client.end()
+      return response(200, { images: result.rows })
     }
 
-    const result = await client.query(`
-      DELETE FROM public.users WHERE id = '${userId}' RETURNING *;
+    await client.query(` 
+      CREATE TABLE public.images (
+        id SERIAL, userId TEXT NOT NULL, key TEXT NOT NULL, src TEXT NOT NULL, FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
+      );
     `)
 
     await client.end()
 
-    return response(200, { deleted: result.rows })
+    return response(200, { images: [] })
   } catch (error) {
     return response(500, error.message)
   }
-}
+};
 
 const response = (responseCode, message) => ({
   statusCode: responseCode,

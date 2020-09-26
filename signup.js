@@ -41,9 +41,11 @@ module.exports.handler = async event => {
   try {
     const body = JSON.parse(event.body)
     const { username, password } = body
+
     if (!username || !password) {
       return response(400, 'You must specify the username and password')
     }
+
     await cognitoIdentityServiceProvider.signUp({
       Username: username,
       Password: password,
@@ -51,6 +53,7 @@ module.exports.handler = async event => {
     }).promise()
 
     const userId = await saveUser(username, password)
+    
     return response(200, `Signed up successfully, please check your email: ${userId}`)
   } catch (error) {
     return response(error.statusCode, error.message)

@@ -21,13 +21,13 @@ const deleteImgFromS3 = (key) => {
 
 module.exports.handler = async (event) => {
   try {
+    const userId = event['pathParameters']['userId']
     const body = JSON.parse(event.body)
-    const { userId, key } = body
-    if (!userId || !key) {
-      return response(400, 'You must specify userId, key')
+    const { key } = body
+    
+    if (!key) {
+      return response(400, 'You must specify key')
     }
-
-    await deleteImgFromS3(key)
 
     const client = new Client({
       host: process.env.DB_HOSTNAME,
@@ -54,8 +54,10 @@ module.exports.handler = async (event) => {
     const result = await client.query(`
       DELETE FROM public.images WHERE userId = '${userId}' AND key = '${key}' RETURNING *;
     `)
-
+ 
     await client.end()
+
+    await deleteImgFromS3(key) 
 
     return response(200, { deleted: result.rows })
   } catch (error) {
