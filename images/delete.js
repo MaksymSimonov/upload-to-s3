@@ -8,15 +8,7 @@ const deleteImgFromS3 = (key) => {
     Key: key 
   }
   
-  return new Promise((resolve, reject) => {
-    s3.deleteObject(params, (err, data) => {
-      if (err) {
-        reject(err)
-        return
-      }
-      resolve(data)
-    })
-  })
+  return s3.deleteObject(params).promise()
 }
 
 module.exports.handler = async (event) => {

@@ -2,38 +2,29 @@ const S3 = require('aws-sdk/clients/s3')
 const uniqid = require('uniqid')
 const mime = require('mime')
 
-const createPresignedPost = ({ key, contentType }) => {
-  const s3 = new S3()
-  const params = {
-    Expires: 600,
-    Bucket: process.env.BUCKET_NAME,
-    Conditions: [['content-length-range', 100, 10000000], {'acl': 'public-read'}], // 100Byte - 10MB
-    Fields: {
-      'Content-Type': contentType,
-      'acl': 'public-read',
-      key
-    }
-  }
-
-  return new Promise((resolve, reject) => {
-    s3.createPresignedPost(params, (err, data) => {
-      if (err) {
-        reject(err)
-        return
-      }
-      resolve(data)
-    })
-  })
-}
-
 module.exports.handler = async (event) => {
   try {
+    const s3 = new S3()
     const fileName = event['pathParameters']['fileName']
 
-    const presignedPostData = await createPresignedPost({
-      key: `${uniqid()}_${fileName}`,
-      contentType: mime.getType(fileName)
-    })
+    const key = `${uniqid()}_${fileName}`
+    const contentType = mime.getType(fileName)
+
+    const params = {
+      Expires: 600,
+      Bucket: process.env.BUCKET_NAME,
+      Conditions: [
+        ['content-length-range', 100, 10000000],  // 100Byte - 10MB
+        {'acl': 'public-read'}
+      ],
+      Fields: {
+        'Content-Type': contentType,
+        'acl': 'public-read',
+        key
+      }
+    }
+
+    const presignedPostData = s3.createPresignedPost(params)
 
     return response(200, { data: presignedPostData })
   } catch (error) {
