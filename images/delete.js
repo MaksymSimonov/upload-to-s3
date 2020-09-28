@@ -21,9 +21,9 @@ const deleteImgFromS3 = (key) => {
 
 module.exports.handler = async (event) => {
   try {
-    const userId = event['pathParameters']['userId']
     const body = JSON.parse(event.body)
     const { key } = body
+    const userId = event['requestContext']['authorizer']['claims']['email']
     
     if (!key) {
       return response(400, 'You must specify key')

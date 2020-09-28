@@ -2,9 +2,9 @@ const { Client } = require('pg')
 
 module.exports.handler = async (event) => {
   try {
-    const userId = event['pathParameters']['userId']
     const body = JSON.parse(event.body)
     const { key, src } = body
+    const userId = event['requestContext']['authorizer']['claims']['email']
 
     if (!key || !src) {
       return response(400, 'You must specify key and src')

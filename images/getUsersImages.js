@@ -2,7 +2,7 @@ const { Client } = require('pg')
 
 module.exports.handler = async (event) => {
   try {
-    const userId = event['pathParameters']['userId']
+    const userId = event['requestContext']['authorizer']['claims']['email']
 
     const client = new Client({
       host: process.env.DB_HOSTNAME,

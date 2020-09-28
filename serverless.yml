@@ -99,12 +99,8 @@ functions:
         - 'node_modules/**'
     events:
       - http:
-          path: 'images/{userId}/post'
+          path: 'images/post'
           method: post
-          request:
-            parameters:
-              paths:
-                userId: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -117,12 +113,8 @@ functions:
         - 'node_modules/**'
     events:
       - http:
-          path: 'images/{userId}/delete'
+          path: 'images/delete'
           method: delete
-          request:
-            parameters:
-              paths:
-                userId: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -135,12 +127,8 @@ functions:
         - 'node_modules/**'
     events:
       - http:
-          path: 'images/{userId}/getAll'
+          path: 'images/getUsersImages'
           method: get
-          request:
-            parameters:
-              paths:
-                userId: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
